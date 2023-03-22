@@ -1,0 +1,14 @@
+vim.o.breakindent = true
+vim.o.clipboard = 'unnamedplus'
+vim.o.completeopt = 'menuone,noinsert,noselect'
+vim.o.incsearch = true
+vim.o.ignorecase = true
+vim.o.mouse = 'a'
+vim.o.number = true
+vim.o.relativenumber = true
+vim.o.scrolloff = 10
+vim.o.signcolumn = 'yes'
+vim.o.smartcase = true
+vim.o.termguicolors = true
+vim.o.undofile = true
+vim.o.updatetime = 250
