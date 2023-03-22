@@ -24,3 +24,9 @@ and then the repo files can be checked-out via the above mentioned `git` options
 ```
 git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME pull
 ```
+
+It will probably be desired that untracked files are not shown by default because plenty of files and directories will live in `$HOME` that should not be committed:
+
+```
+git config --local status.showUntrackedFiles no
+```
