@@ -10,5 +10,17 @@ This means that there is no *requirement* to `git clone` into `$HOME`; the `.git
 For example, if its desired that the `.git` directory live in `$HOME/.dotfiles` then this becomes the `git` command when interacting with the bare repository:
 
 ```
-git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME
+```
+
+In order to clone this repo:
+
+```
+git clone --bare <URL> $HOME/.dotfiles/
+```
+
+and then the repo files can be checked-out via the above mentioned `git` options:
+
+```
+git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME pull
 ```
