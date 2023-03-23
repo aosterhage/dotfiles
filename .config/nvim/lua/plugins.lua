@@ -156,7 +156,7 @@ local function setup_lsp()
   --  and is needed because the vim.lsp.buf functions need the buffer number
   local on_attach = function(_, bufnr)
     vim.keymap.set('n', '<leader>la', vim.lsp.buf.code_action, { buffer = bufnr, desc = 'Code Action' })
-    vim.keymap.set('n', '<leader>ld', vim.lsp.buf.definition, { buffer = bufnr, desc = 'Defintion' })
+    vim.keymap.set('n', '<leader>ld', vim.lsp.buf.definition, { buffer = bufnr, desc = 'Definition' })
     vim.keymap.set('n', '<leader>lD', vim.lsp.buf.declaration, { buffer = bufnr, desc = 'Declaration' })
     vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format, { buffer = bufnr, desc = 'Format' })
     vim.keymap.set('n', '<leader>lh', vim.lsp.buf.hover, { buffer = bufnr, desc = 'Hover Documentation' })
@@ -219,7 +219,6 @@ local function setup_treesitter()
       'help',
       'vim'
     },
-    -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
     auto_install = false,
     highlight = { enable = true },
     indent = { enable = true, disable = { 'python' } },
