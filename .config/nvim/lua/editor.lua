@@ -9,6 +9,7 @@ vim.o.relativenumber = true
 vim.o.scrolloff = 10
 vim.o.signcolumn = 'yes'
 vim.o.smartcase = true
+vim.o.spell = true
 vim.o.termguicolors = true
 vim.o.undofile = true
 vim.o.updatetime = 250

@@ -72,6 +72,8 @@ require('lazy').setup({
     priority = 1000,
     config = function()
       vim.cmd.colorscheme('sonokai')
+      vim.api.nvim_set_hl(0, 'SpellBad', { background = '#af0000' })
+      vim.api.nvim_set_hl(0, 'SpellCap', { background = '#0000af' })
     end,
   },
 
