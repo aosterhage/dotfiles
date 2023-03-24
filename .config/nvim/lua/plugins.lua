@@ -6,15 +6,13 @@ if not vim.loop.fs_stat(lazypath) then
       'clone',
       '--filter=blob:none',
       'https://github.com/folke/lazy.nvim.git',
-      '--branch=stable', -- latest stable release
+      '--branch=stable',
       lazypath,
    }
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Install any desired plugins
 require('lazy').setup({
-   -- Treesitter
    {
       'nvim-treesitter/nvim-treesitter',
       dependencies = {
@@ -25,11 +23,9 @@ require('lazy').setup({
       end,
    },
 
-   -- LSP
    {
       'neovim/nvim-lspconfig',
       dependencies = {
-         -- Completion support
          {
             'hrsh7th/nvim-cmp',
             dependencies = {
@@ -39,19 +35,13 @@ require('lazy').setup({
             }
          },
 
-         -- Automatically install LSPs to stdpath for neovim
          { 'williamboman/mason.nvim',          opts = {} },
          { 'williamboman/mason-lspconfig.nvim' },
-
-         -- Useful status updates for LSP
          { 'j-hui/fidget.nvim',                opts = {} },
-
-         -- Automatically setup lua lsp with config and runtime directories
          { 'folke/neodev.nvim',                opts = {} },
       },
    },
 
-   -- Fuzzy finder for everything
    {
       'nvim-telescope/telescope.nvim',
       dependencies = {
@@ -66,7 +56,6 @@ require('lazy').setup({
       }
    },
 
-   -- Colorscheme
    {
       'EdenEast/nightfox.nvim',
       priority = 1000,
@@ -75,10 +64,8 @@ require('lazy').setup({
       end,
    },
 
-   -- Show pending keybinds
    { 'folke/which-key.nvim',  opts = {} },
 
-   -- Add git related signs to the gutter
    {
       'lewis6991/gitsigns.nvim',
       opts = {
@@ -92,7 +79,6 @@ require('lazy').setup({
       },
    },
 
-   -- Add indentation guides even on blank lines
    {
       'lukas-reineke/indent-blankline.nvim',
       opts = {
@@ -101,13 +87,10 @@ require('lazy').setup({
       },
    },
 
-   -- Comment visual regions/lines
    { 'numToStr/Comment.nvim', opts = {} },
 
-   -- Detect tabstop and shiftwidth automatically
    { 'tpope/vim-sleuth' },
 
-   -- Markdown preview
    {
       'ellisonleao/glow.nvim',
       config = true,
@@ -321,7 +304,6 @@ local function setup_completion()
    })
 end
 
--- Setup any needed plugins
 setup_completion()
 setup_lsp()
 setup_telescope()
