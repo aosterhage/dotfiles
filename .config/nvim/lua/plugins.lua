@@ -13,6 +13,8 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+   { 'williamboman/mason.nvim', opts = {} },
+
    {
       'nvim-treesitter/nvim-treesitter',
       dependencies = {
@@ -35,11 +37,18 @@ require('lazy').setup({
             }
          },
 
-         { 'williamboman/mason.nvim',          opts = {} },
          { 'williamboman/mason-lspconfig.nvim' },
          { 'j-hui/fidget.nvim',                opts = {} },
          { 'folke/neodev.nvim',                opts = {} },
       },
+   },
+
+   { 'mfussenegger/nvim-dap' },
+   { 'rcarriga/nvim-dap-ui',    opts = {} },
+   {
+      'jay-babu/mason-nvim-dap.nvim',
+      config = function()
+      end
    },
 
    {
@@ -101,6 +110,90 @@ require('lazy').setup({
    },
 })
 
+local function setup_completion()
+   local cmp = require('cmp')
+   local luasnip = require('luasnip')
+
+   luasnip.config.setup({})
+
+   cmp.setup({
+      snippet = {
+         expand = function(args)
+            luasnip.lsp_expand(args.body)
+         end,
+      },
+      window = {
+         completion = cmp.config.window.bordered(),
+         documentation = cmp.config.window.bordered()
+      },
+      mapping = cmp.mapping.preset.insert({
+         ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+         ['<C-d>'] = cmp.mapping.scroll_docs(4),
+         ['<C-e>'] = cmp.mapping.abort(),
+         ['<C-n'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+               cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+               luasnip.expand_or_jump()
+            else
+               fallback()
+            end
+         end, { 'i', 's' }),
+         ['<C-p>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+               cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+               luasnip.jump(-1)
+            else
+               fallback()
+            end
+         end, { 'i', 's' }),
+      }),
+      sources = {
+         { name = 'nvim_lsp' },
+         { name = 'luasnip' },
+      },
+   })
+end
+
+local function setup_dap()
+   local dap = require('dap')
+   local mason_nvim_dap = require('mason-nvim-dap')
+   local which_key = require('which-key')
+
+   mason_nvim_dap.setup({
+      automatic_setup = true
+   })
+   mason_nvim_dap.setup_handlers({})
+
+   which_key.register({
+      ['<leader>d'] = { name = '+Debug Adapter Protocol' }
+   })
+   vim.keymap.set('n', '<leader>db', dap.toggle_breakpoint, { desc = 'Breakpoint toggle' })
+   vim.keymap.set('n', '<leader>dc', dap.continue, { desc = 'Continue' })
+   vim.keymap.set('n', '<leader>dC', dap.reverse_continue, { desc = 'Reverse continue' })
+   vim.keymap.set('n', '<leader>dp', dap.pause, { desc = 'Pause' })
+   vim.keymap.set('n', '<leader>dg', dap.run_to_cursor, { desc = 'Run to cursor' })
+   vim.keymap.set('n', '<leader>dG', dap.goto_, { desc = 'Goto line' })
+   vim.keymap.set('n', '<leader>dr', dap.restart, { desc = 'Restart' })
+   vim.keymap.set('n', '<leader>dR', dap.run_last, { desc = 'Run last' })
+   vim.keymap.set('n', '<leader>dt', dap.terminate, { desc = 'Terminate' })
+
+   which_key.register({
+      ['<leader>dB'] = { name = '+Breakpoints' }
+   })
+   vim.keymap.set('n', '<leader>dBc', dap.clear_breakpoints, { desc = 'Clear all' })
+   vim.keymap.set('n', '<leader>dBl', dap.list_breakpoints, { desc = 'List' })
+
+   which_key.register({
+      ['<leader>ds'] = { name = '+Step' }
+   })
+   vim.keymap.set('n', '<leader>dsb', dap.step_back, { desc = 'Step back' })
+   vim.keymap.set('n', '<leader>dsi', dap.step_into, { desc = 'Step into' })
+   vim.keymap.set('n', '<leader>dso', dap.step_over, { desc = 'Step over' })
+   vim.keymap.set('n', '<leader>dsO', dap.step_out, { desc = 'Step out' })
+end
+
 local function setup_telescope()
    local telescope = require('telescope')
    local builtin = require('telescope.builtin')
@@ -128,14 +221,14 @@ local function setup_telescope()
 end
 
 local function setup_lsp()
-   local which_key = require('which-key')
-   which_key.register({
-      ['<leader>l'] = { name = '+LSP' }
-   })
-
    --  This function gets run when an LSP connects to a particular buffer
    --  and is needed because the vim.lsp.buf functions need the buffer number
    local on_attach = function(_, bufnr)
+      local which_key = require('which-key')
+      which_key.register({
+         ['<leader>l'] = { name = '+Language Server Protocol' }
+      })
+
       vim.keymap.set('n', '<leader>la', vim.lsp.buf.code_action, { buffer = bufnr, desc = 'Code Action' })
       vim.keymap.set('n', '<leader>ld', vim.lsp.buf.definition, { buffer = bufnr, desc = 'Definition' })
       vim.keymap.set('n', '<leader>lD', vim.lsp.buf.declaration, { buffer = bufnr, desc = 'Declaration' })
@@ -206,10 +299,10 @@ local function setup_treesitter()
       incremental_selection = {
          enable = true,
          keymaps = {
-            init_selection = "gnn",
-            node_incremental = "grn",
-            scope_incremental = "grc",
-            node_decremental = "grm",
+            init_selection = 'gnn',
+            node_incremental = 'grn',
+            scope_incremental = 'grc',
+            node_decremental = 'grm',
          },
       },
       textobjects = {
@@ -258,53 +351,8 @@ local function setup_treesitter()
    })
 end
 
-local function setup_completion()
-   local cmp = require('cmp')
-   local luasnip = require('luasnip')
-
-   luasnip.config.setup({})
-
-   cmp.setup({
-      snippet = {
-         expand = function(args)
-            luasnip.lsp_expand(args.body)
-         end,
-      },
-      window = {
-         completion = cmp.config.window.bordered(),
-         documentation = cmp.config.window.bordered()
-      },
-      mapping = cmp.mapping.preset.insert({
-         ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-         ['<C-d>'] = cmp.mapping.scroll_docs(4),
-         ['<C-e>'] = cmp.mapping.abort(),
-         ['<C-n'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-               cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-               luasnip.expand_or_jump()
-            else
-               fallback()
-            end
-         end, { 'i', 's' }),
-         ['<C-p>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-               cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-               luasnip.jump(-1)
-            else
-               fallback()
-            end
-         end, { 'i', 's' }),
-      }),
-      sources = {
-         { name = 'nvim_lsp' },
-         { name = 'luasnip' },
-      },
-   })
-end
-
 setup_completion()
+setup_dap()
 setup_lsp()
 setup_telescope()
 setup_treesitter()
